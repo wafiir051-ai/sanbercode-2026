@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../utils/currency.dart';
+import '../../../routes/app_pages.dart';
+import '../../../widgets/cart_badge_button.dart';
 import '../controllers/detail_controller.dart';
 
 class DetailView extends GetView<DetailController> {
@@ -9,7 +10,13 @@ class DetailView extends GetView<DetailController> {
 
   @override
   Widget build(BuildContext context) {
-    final p = controller.product;
+    final p = controller.product.value;
+    if (p == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Detail Produk')),
+        body: const Center(child: Text('Produk tidak ditemukan')),
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detail Produk'),
@@ -23,6 +30,11 @@ class DetailView extends GetView<DetailController> {
                 ),
                 onPressed: controller.toggleFavorite,
               )),
+          CartBadgeButton(
+            count: () => controller.cartController.totalItemCount,
+            onPressed: () => Get.toNamed(Routes.CART),
+          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: ListView(
@@ -33,7 +45,7 @@ class DetailView extends GetView<DetailController> {
             child: AspectRatio(
               aspectRatio: 1.2,
               child: Image.network(
-                p['imageUrl'],
+                p.imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => Container(
                   color: Colors.grey.shade300,
@@ -43,23 +55,23 @@ class DetailView extends GetView<DetailController> {
             ),
           ),
           const SizedBox(height: 16),
-          Text(p['category'], style: TextStyle(color: Colors.grey.shade600)),
+          Text(p.category, style: TextStyle(color: Colors.grey.shade600)),
           const SizedBox(height: 4),
-          Text(p['name'],
+          Text(p.name,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
           const SizedBox(height: 6),
           Row(
             children: [
               const Icon(Icons.star_rounded, color: Colors.amber, size: 18),
               const SizedBox(width: 4),
-              Text('${p['rating']}'),
+              Text('${p.rating}'),
             ],
           ),
           const SizedBox(height: 10),
-          Text(formatRupiah(p['price'] as int),
+          Text(p.formattedPrice,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 14),
-          Text(p['description'] ?? ''),
+          Text(p.description),
           const SizedBox(height: 20),
           const Text('Pilih Ukuran',
               style: TextStyle(fontWeight: FontWeight.w600)),
@@ -109,7 +121,7 @@ class DetailView extends GetView<DetailController> {
                 child: ElevatedButton.icon(
                   onPressed: controller.addToCart,
                   icon: const Icon(Icons.add_shopping_cart_rounded),
-                  label: const Text('Tambah Keranjang'),
+                  label: const Text('Tambah ke Keranjang'),
                   style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(48)),
                 ),

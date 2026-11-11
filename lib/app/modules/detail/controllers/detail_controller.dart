@@ -1,13 +1,22 @@
 import 'package:get/get.dart';
 
+import '../../../data/models/product_model.dart';
+import '../../cart/controllers/cart_controller.dart';
 import '../../home/controllers/home_controller.dart';
 
 class DetailController extends GetxController {
-  late final Map<String, dynamic> product;
+  final product = Rx<ProductModel?>(null);
 
   final quantity = 1.obs;
   final selectedSize = '42'.obs;
   final sizes = const ['39', '40', '41', '42', '43', '44'];
+
+  CartController get cartController {
+    if (Get.isRegistered<CartController>()) {
+      return Get.find<CartController>();
+    }
+    return Get.put(CartController());
+  }
 
   HomeController get homeController {
     if (Get.isRegistered<HomeController>()) {
@@ -19,7 +28,12 @@ class DetailController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    product = Map<String, dynamic>.from(Get.arguments as Map);
+    final args = Get.arguments;
+    if (args is ProductModel) {
+      product.value = args;
+    } else if (args is Map) {
+      product.value = ProductModel.fromMap(Map<String, dynamic>.from(args));
+    }
   }
 
   void incrementQuantity() => quantity.value++;
@@ -30,12 +44,21 @@ class DetailController extends GetxController {
 
   void selectSize(String size) => selectedSize.value = size;
 
-  bool get isFavorite => homeController.isFavorite(product['id']);
+  bool get isFavorite =>
+      product.value != null && homeController.isFavorite(product.value!.id);
 
-  void toggleFavorite() => homeController.toggleFavorite(product['id']);
+  void toggleFavorite() {
+    if (product.value == null) return;
+    homeController.toggleFavorite(product.value!.id);
+  }
 
   void addToCart() {
-    homeController.addToCart(product, quantity: quantity.value);
+    if (product.value == null) return;
+    cartController.addItem(
+      product.value!,
+      quantity: quantity.value,
+      size: selectedSize.value,
+    );
     quantity.value = 1;
   }
 }
