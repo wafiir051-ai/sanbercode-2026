@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../data/local/storage_service.dart';
 import '../../../widgets/cart_badge_button.dart';
 import '../controllers/home_controller.dart';
+import '../widgets/product_card_shimmer.dart';
 import 'components/product_card.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -11,10 +13,23 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final storage = Get.find<StorageService>();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('KicksStore'),
         actions: [
+          Obx(
+            () => IconButton(
+              tooltip: storage.isDarkMode ? 'Mode Terang' : 'Mode Gelap',
+              icon: Icon(
+                storage.isDarkMode
+                    ? Icons.light_mode_rounded
+                    : Icons.dark_mode_rounded,
+              ),
+              onPressed: storage.toggleTheme,
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.favorite_border_rounded),
             onPressed: controller.openWishlist,
@@ -30,44 +45,32 @@ class HomeView extends GetView<HomeController> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Obx(() => SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: controller.categories.map((category) {
-                      final isSelected =
-                          controller.selectedCategory.value == category;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: ChoiceChip(
-                          label: Text(category),
-                          selected: isSelected,
-                          onSelected: (_) => controller.changeCategory(category),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                )),
+            child: Obx(
+              () => SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: controller.categories.map((category) {
+                    final isSelected =
+                        controller.selectedCategory.value == category;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        label: Text(category),
+                        selected: isSelected,
+                        onSelected: (_) => controller.changeCategory(category),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
           ),
           Expanded(
             child: RefreshIndicator(
               onRefresh: controller.fetchProducts,
               child: Obx(() {
                 if (controller.isLoading.value && controller.products.isEmpty) {
-                  return ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    children: const [
-                      SizedBox(height: 120),
-                      Center(
-                        child: Column(
-                          children: [
-                            CircularProgressIndicator(),
-                            SizedBox(height: 16),
-                            Text('Memuat katalog sneakers dari server...'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
+                  return const ProductGridShimmer(itemCount: 6);
                 }
 
                 if (controller.errorMessage.value.isNotEmpty &&
@@ -77,12 +80,19 @@ class HomeView extends GetView<HomeController> {
                     padding: const EdgeInsets.all(32),
                     children: [
                       const SizedBox(height: 80),
-                      Icon(Icons.wifi_off_rounded, size: 56, color: scheme.error),
+                      Icon(
+                        Icons.wifi_off_rounded,
+                        size: 56,
+                        color: scheme.error,
+                      ),
                       const SizedBox(height: 12),
                       const Text(
                         'Gagal Memuat Produk',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       Text(
