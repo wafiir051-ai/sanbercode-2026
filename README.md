@@ -1,6 +1,6 @@
 # KicksStore (e_commerce_smk)
 
-Tugas Sesi 04: Form Handling, Validasi Input Regex, dan Siklus Hidup TextEditingController
+Tugas Sesi 05: Networking REST API dengan Dio, Arsitektur Repository Pattern, dan Deserialisasi JSON Defensif
 Bootcamp Flutter SMK (Sanbercode)
 
 - Nama: Waffir Hasan Alkamiil

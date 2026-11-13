@@ -5,12 +5,7 @@ import '../../cart/controllers/cart_controller.dart';
 import '../../home/controllers/home_controller.dart';
 
 class WishlistController extends GetxController {
-  HomeController get homeController {
-    if (Get.isRegistered<HomeController>()) {
-      return Get.find<HomeController>();
-    }
-    return Get.put(HomeController());
-  }
+  HomeController get homeController => Get.find<HomeController>();
 
   CartController get cartController {
     if (Get.isRegistered<CartController>()) {

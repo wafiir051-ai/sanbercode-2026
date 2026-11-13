@@ -21,6 +21,40 @@ class ProductModel {
 
   String get formattedPrice => formatRupiah(price);
 
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    final rawId = json['id'];
+    final id = rawId != null
+        ? rawId.toString()
+        : 'prod-${DateTime.now().millisecondsSinceEpoch}';
+
+    final name = (json['title'] ?? json['name'] ?? 'Sepatu Sneakers').toString();
+    final rawCategory = (json['category'] ?? 'Lifestyle').toString();
+    final category = rawCategory.isNotEmpty
+        ? '${rawCategory[0].toUpperCase()}${rawCategory.substring(1)}'
+        : 'General';
+
+    final rawPrice = (json['price'] as num?)?.toInt() ?? 150000;
+    final price = rawPrice < 1000 ? rawPrice * 15000 : rawPrice;
+
+    final rating = (json['rating'] as num?)?.toDouble() ?? 4.8;
+    final imageUrl = (json['thumbnail'] ??
+            json['imageUrl'] ??
+            'https://images.unsplash.com/photo-1542291026-7eec264c27ff')
+        .toString();
+    final description =
+        (json['description'] ?? 'Sepatu sneakers berkualitas tinggi.').toString();
+
+    return ProductModel(
+      id: id,
+      name: name,
+      category: category,
+      price: price,
+      rating: rating,
+      imageUrl: imageUrl,
+      description: description,
+    );
+  }
+
   factory ProductModel.fromMap(Map<String, dynamic> map) {
     return ProductModel(
       id: map['id'] as String,

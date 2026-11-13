@@ -1,16 +1,24 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../core/network/result.dart';
 import '../../../data/models/product_model.dart';
+import '../../../data/repository/product_repository.dart';
 import '../../../routes/app_pages.dart';
 import '../../cart/controllers/cart_controller.dart';
 
 class HomeController extends GetxController {
+  HomeController(this._productRepository);
+
+  final ProductRepository _productRepository;
+
+  final isLoading = false.obs;
+  final errorMessage = ''.obs;
+  final products = <ProductModel>[].obs;
   final selectedCategory = 'Semua'.obs;
   final favoriteIds = <String>{}.obs;
 
-  final categories = const ['Semua', 'Sneakers', 'Running', 'Casual', 'Basket'];
-
-  final List<ProductModel> products = const [
+  static const List<ProductModel> _initialFallbackProducts = [
     ProductModel(
       id: 'shoe-01',
       name: 'Air Stride Pro',
@@ -47,24 +55,6 @@ class HomeController extends GetxController {
       description: 'Sneakers low-top bergaya streetwear yang nyaman dipakai seharian.',
       imageUrl: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600',
     ),
-    ProductModel(
-      id: 'shoe-05',
-      name: 'Velocity Run',
-      category: 'Running',
-      price: 1599000,
-      rating: 4.6,
-      description: 'Upper breathable dan sol responsif untuk latihan harian.',
-      imageUrl: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=600',
-    ),
-    ProductModel(
-      id: 'shoe-06',
-      name: 'Daily Walker',
-      category: 'Casual',
-      price: 749000,
-      rating: 4.3,
-      description: 'Ringan dan empuk, cocok untuk jalan santai.',
-      imageUrl: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600',
-    ),
   ];
 
   CartController get cartController {
@@ -76,10 +66,61 @@ class HomeController extends GetxController {
 
   int get cartCount => cartController.totalItemCount;
 
+  List<String> get categories =>
+      ['Semua', ...products.map((p) => p.category).toSet()];
+
   List<ProductModel> get filteredProducts {
     final category = selectedCategory.value;
     if (category == 'Semua') return products;
     return products.where((p) => p.category == category).toList();
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchProducts();
+  }
+
+  Future<void> fetchProducts() async {
+    final hadProducts = products.isNotEmpty;
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    final result = await _productRepository.fetchProducts();
+
+    switch (result) {
+      case Success(data: final remoteProducts):
+        if (remoteProducts.isNotEmpty) {
+          products.assignAll(remoteProducts);
+          selectedCategory.value = 'Semua';
+          Get.snackbar(
+            'Katalog Berhasil Diperbarui',
+            'Berhasil mengunduh ${remoteProducts.length} sepatu terbaru dari server!',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 2),
+            backgroundColor: const Color(0xFF10B981),
+            colorText: Colors.white,
+            icon: const Icon(Icons.cloud_done_rounded, color: Colors.white),
+          );
+        }
+      case Failure(error: final error):
+        errorMessage.value = error;
+        if (hadProducts) {
+          Get.snackbar(
+            'Mode Offline',
+            'Koneksi ke server terputus. Menampilkan data yang sudah ada.',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 2),
+            backgroundColor: const Color(0xFFEF4444),
+            colorText: Colors.white,
+            icon: const Icon(Icons.wifi_off_rounded, color: Colors.white),
+          );
+        } else {
+          products.assignAll(_initialFallbackProducts);
+        }
+    }
+
+    isLoading.value = false;
   }
 
   void changeCategory(String category) => selectedCategory.value = category;

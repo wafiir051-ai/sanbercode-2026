@@ -18,12 +18,7 @@ class DetailController extends GetxController {
     return Get.put(CartController());
   }
 
-  HomeController get homeController {
-    if (Get.isRegistered<HomeController>()) {
-      return Get.find<HomeController>();
-    }
-    return Get.put(HomeController());
-  }
+  HomeController get homeController => Get.find<HomeController>();
 
   @override
   void onInit() {
