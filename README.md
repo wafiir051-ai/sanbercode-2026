@@ -1,6 +1,6 @@
 # KicksStore (e_commerce_smk)
 
-Tugas Sesi 03: Arsitektur Bersih MVVM & Pemisahan Logika Bisnis Keranjang Belanja
+Tugas Sesi 04: Form Handling, Validasi Regex, dan Modifikasi Sandi Wajib Angka
 Bootcamp Flutter SMK (Sanbercode)
 
 - Nama: Waffir Hasan Alkamiil

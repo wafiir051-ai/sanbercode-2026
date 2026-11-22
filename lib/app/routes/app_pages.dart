@@ -6,8 +6,11 @@ import 'package:e_commerce_smk/app/modules/detail/bindings/detail_binding.dart';
 import 'package:e_commerce_smk/app/modules/detail/views/detail_view.dart';
 import 'package:e_commerce_smk/app/modules/home/bindings/home_binding.dart';
 import 'package:e_commerce_smk/app/modules/home/views/home_view.dart';
+import 'package:e_commerce_smk/app/modules/login/bindings/login_binding.dart';
 import 'package:e_commerce_smk/app/modules/login/views/login_view.dart';
 import 'package:e_commerce_smk/app/modules/orders/views/orders_view.dart';
+import 'package:e_commerce_smk/app/modules/register/bindings/register_binding.dart';
+import 'package:e_commerce_smk/app/modules/register/views/register_view.dart';
 import 'package:e_commerce_smk/app/modules/wishlist/bindings/wishlist_binding.dart';
 import 'package:e_commerce_smk/app/modules/wishlist/views/wishlist_view.dart';
 
@@ -17,10 +20,19 @@ import 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.HOME;
+  static const INITIAL = Routes.LOGIN;
 
   static final routes = [
-    GetPage(name: Routes.LOGIN, page: () => const LoginView()),
+    GetPage(
+      name: Routes.LOGIN,
+      page: () => const LoginView(),
+      binding: LoginBinding(),
+    ),
+    GetPage(
+      name: Routes.REGISTER,
+      page: () => const RegisterView(),
+      binding: RegisterBinding(),
+    ),
     GetPage(
       name: Routes.HOME,
       page: () => const HomeView(),
