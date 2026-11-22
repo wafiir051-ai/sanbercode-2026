@@ -1,8 +1,17 @@
+import 'package:e_commerce_smk/app/core/network/result.dart';
 import 'package:e_commerce_smk/app/core/theme/app_theme.dart';
+import 'package:e_commerce_smk/app/data/models/product_model.dart';
+import 'package:e_commerce_smk/app/data/repository/product_repository.dart';
 import 'package:e_commerce_smk/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+
+class _OfflineRepo implements ProductRepository {
+  @override
+  Future<Result<List<ProductModel>, String>> fetchProducts() async =>
+      const Failure('Tidak ada koneksi');
+}
 
 void main() {
   testWidgets('beranda tampil, tambah ke keranjang menaikkan badge', (
@@ -17,6 +26,9 @@ void main() {
     };
     addTearDown(() => FlutterError.onError = onError);
 
+    Get.put<ProductRepository>(_OfflineRepo());
+    addTearDown(Get.reset);
+
     await tester.pumpWidget(
       GetMaterialApp(
         theme: AppTheme.light,
@@ -25,7 +37,9 @@ void main() {
       ),
     );
     await tester.pump();
+    await tester.pump();
 
+    expect(find.text('Tidak ada koneksi'), findsOneWidget);
     expect(find.text('Katalog Sneakers'), findsOneWidget);
     expect(find.text('6 Produk'), findsOneWidget);
 

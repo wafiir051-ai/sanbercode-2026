@@ -1,26 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:e_commerce_smk/app/core/network/result.dart';
+import 'package:e_commerce_smk/app/core/theme/app_colors.dart';
 import 'package:e_commerce_smk/app/data/models/product_model.dart';
+import 'package:e_commerce_smk/app/data/repository/product_repository.dart';
 import 'package:e_commerce_smk/app/modules/cart/controllers/cart_controller.dart';
 import 'package:e_commerce_smk/app/routes/app_pages.dart';
 
 class HomeController extends GetxController {
+  HomeController(this._productRepository);
+
+  final ProductRepository _productRepository;
+
+  final isLoading = false.obs;
+  final errorMessage = ''.obs;
+
   final selectedCategory = 'Semua'.obs;
   final favoriteIds = <String>{}.obs;
 
   CartController get cartController => Get.find<CartController>();
   int get cartCount => cartController.totalItemCount;
 
-  final categories = <String>[
+  List<String> get categories => [
     'Semua',
-    'Running',
-    'Casual',
-    'Basketball',
-    'Lifestyle',
+    ...products.map((p) => p.category).toSet(),
   ];
 
-  final products = <ProductModel>[
+  static const _fallbackProducts = <ProductModel>[
     ProductModel(
       id: 'shoe-01',
       name: 'Nike Air Jordan 1 High OG',
@@ -81,7 +88,44 @@ class HomeController extends GetxController {
       imageUrl: 'https://images.unsplash.com/photo-1607522370275-f14206abe5d3?auto=format&fit=crop&w=800&q=80',
       description: 'Versi premium dari siluet Chuck Taylor klasik dengan kanvas 12oz lebih tebal, jahitan samping vintage, dan insole OrthoLite super empuk.',
     ),
-  ].obs;
+  ];
+
+  final products = <ProductModel>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchProducts();
+  }
+
+  Future<void> fetchProducts() async {
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    final result = await _productRepository.fetchProducts();
+    switch (result) {
+      case Success(data: final remote):
+        if (remote.isNotEmpty) {
+          products.assignAll(remote);
+          selectedCategory.value = 'Semua';
+          Get.snackbar(
+            'Katalog Berhasil Diperbarui',
+            'Berhasil mengunduh ${remote.length} sepatu terbaru dari server!',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 2),
+            backgroundColor: AppColors.success,
+            colorText: Colors.white,
+            margin: const EdgeInsets.all(16),
+            borderRadius: 12,
+            icon: const Icon(Icons.cloud_done_rounded, color: Colors.white),
+          );
+        }
+      case Failure(error: final error):
+        errorMessage.value = error;
+        if (products.isEmpty) products.assignAll(_fallbackProducts);
+    }
+    isLoading.value = false;
+  }
 
   List<ProductModel> get filteredProducts {
     if (selectedCategory.value == 'Semua') {
