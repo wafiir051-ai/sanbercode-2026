@@ -3,8 +3,10 @@ import 'package:get/get.dart';
 
 import 'package:e_commerce_smk/app/core/theme/app_colors.dart';
 import 'package:e_commerce_smk/app/modules/home/controllers/home_controller.dart';
+import 'package:e_commerce_smk/app/data/local/storage_service.dart';
 import 'package:e_commerce_smk/app/modules/home/views/components/product_card.dart';
 import 'package:e_commerce_smk/app/modules/home/views/components/promo_banner.dart';
+import 'package:e_commerce_smk/app/modules/home/widgets/product_card_shimmer.dart';
 import 'package:e_commerce_smk/app/routes/app_pages.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -71,11 +73,7 @@ class HomeView extends GetView<HomeController> {
               isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
               color: isDark ? AppColors.accent : AppColors.lightTextPrimary,
             ),
-            onPressed: () {
-              Get.changeThemeMode(
-                Get.isDarkMode ? ThemeMode.light : ThemeMode.dark,
-              );
-            },
+            onPressed: () => Get.find<StorageService>().toggleTheme(),
           ),
 
           Stack(
@@ -349,10 +347,7 @@ class HomeView extends GetView<HomeController> {
 
               Obx(() {
                 if (controller.isLoading.value && controller.products.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.all(40),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
+                  return const ProductGridShimmer();
                 }
                 final items = controller.filteredProducts;
                 if (items.isEmpty) {

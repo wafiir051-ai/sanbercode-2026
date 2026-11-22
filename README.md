@@ -1,6 +1,6 @@
 # KicksStore (e_commerce_smk)
 
-Tugas Sesi 04: Form Handling, Validasi Regex, dan Modifikasi Sandi Wajib Angka
+Tugas Sesi 06: Local Storage I, Persistensi Tema SharedPreferences, Inisialisasi Hive CE, dan Shimmer Skeleton Loading
 Bootcamp Flutter SMK (Sanbercode)
 
 - Nama: Waffir Hasan Alkamiil
