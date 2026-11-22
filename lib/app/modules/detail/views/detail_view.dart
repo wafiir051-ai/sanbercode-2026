@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 import 'package:e_commerce_smk/app/core/theme/app_colors.dart';
 import 'package:e_commerce_smk/app/modules/detail/controllers/detail_controller.dart';
 import 'package:e_commerce_smk/app/routes/app_pages.dart';
+import 'package:e_commerce_smk/app/widgets/cart_badge_button.dart';
 
 class DetailView extends GetView<DetailController> {
   const DetailView({super.key});
@@ -12,11 +12,6 @@ class DetailView extends GetView<DetailController> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final currencyFormatter = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp ',
-      decimalDigits: 0,
-    );
 
     return Scaffold(
       appBar: AppBar(
@@ -38,20 +33,16 @@ class DetailView extends GetView<DetailController> {
               onPressed: controller.toggleFavorite,
             ),
           ),
-          IconButton(
-            tooltip: 'Buka Keranjang',
-            icon: const Icon(Icons.shopping_bag_outlined),
+          CartBadgeButton(
+            count: () => controller.cartController.totalItemCount,
             onPressed: () => Get.toNamed(Routes.CART),
           ),
           const SizedBox(width: 8),
         ],
       ),
       body: Obx(() {
-        final product = controller.product;
-        final price = product['price'];
-        final formattedPrice = price is num
-            ? currencyFormatter.format(price)
-            : (price?.toString() ?? 'Rp 0');
+        final product = controller.product.value;
+        if (product == null) return const SizedBox.shrink();
 
         return SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -75,7 +66,7 @@ class DetailView extends GetView<DetailController> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.network(
-                    product['imageUrl'] as String? ?? '',
+                    product.imageUrl,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) => Center(
                       child: Icon(
@@ -110,7 +101,7 @@ class DetailView extends GetView<DetailController> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      product['category'] as String? ?? 'Sneakers',
+                      product.category,
                       style: const TextStyle(
                         color: AppColors.primary,
                         fontSize: 12,
@@ -127,7 +118,7 @@ class DetailView extends GetView<DetailController> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '${product['rating'] ?? 4.9} / 5.0 (${product['reviewCount'] ?? 120}+ ulasan)',
+                        '${product.rating} / 5.0 (${product.reviewCount}+ ulasan)',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -143,7 +134,7 @@ class DetailView extends GetView<DetailController> {
               const SizedBox(height: 12),
 
               Text(
-                product['name'] as String? ?? 'Sneakers Premium',
+                product.name,
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
@@ -155,7 +146,7 @@ class DetailView extends GetView<DetailController> {
               ),
               const SizedBox(height: 8),
               Text(
-                formattedPrice,
+                product.formattedPrice,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
@@ -229,7 +220,7 @@ class DetailView extends GetView<DetailController> {
               ),
               const SizedBox(height: 8),
               Text(
-                product['description'] as String? ?? 'Sneakers berkualitas tinggi dengan bantalan responsif, material premium pilihan, dan kenyamanan optimal untuk aktivitas kasual maupun olahraga.',
+                product.description,
                 style: TextStyle(
                   fontSize: 14,
                   height: 1.6,

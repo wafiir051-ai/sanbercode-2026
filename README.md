@@ -1,6 +1,6 @@
 # KicksStore (e_commerce_smk)
 
-Tugas Sesi 02: Reaktivitas UI Modern Tanpa setState, Quantity Counter & Cart Badge
+Tugas Sesi 03: Arsitektur Bersih MVVM & Pemisahan Logika Bisnis Keranjang Belanja
 Bootcamp Flutter SMK (Sanbercode)
 
 - Nama: Waffir Hasan Alkamiil

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 
+import 'package:e_commerce_smk/app/modules/cart/bindings/cart_binding.dart';
 import 'package:e_commerce_smk/app/modules/cart/views/cart_view.dart';
 import 'package:e_commerce_smk/app/modules/detail/bindings/detail_binding.dart';
 import 'package:e_commerce_smk/app/modules/detail/views/detail_view.dart';
@@ -30,7 +31,11 @@ class AppPages {
       page: () => const DetailView(),
       binding: DetailBinding(),
     ),
-    GetPage(name: Routes.CART, page: () => const CartView()),
+    GetPage(
+      name: Routes.CART,
+      page: () => const CartView(),
+      binding: CartBinding(),
+    ),
     GetPage(
       name: Routes.WISHLIST,
       page: () => const WishlistView(),
