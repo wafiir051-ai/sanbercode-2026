@@ -156,7 +156,7 @@ class HomeView extends GetView<HomeController> {
                     ),
                   ),
                   InkWell(
-                    onTap: () => Get.toNamed(Routes.LOGIN),
+                    onTap: controller.openAccount,
                     borderRadius: BorderRadius.circular(24),
                     child: CircleAvatar(
                       radius: 22,
@@ -442,7 +442,7 @@ class HomeView extends GetView<HomeController> {
         onTap: (index) {
           if (index == 1) Get.toNamed(Routes.WISHLIST);
           if (index == 2) Get.toNamed(Routes.ORDERS);
-          if (index == 3) Get.toNamed(Routes.LOGIN);
+          if (index == 3) controller.openAccount();
         },
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:e_commerce_smk/app/core/services/auth_service.dart';
 import 'package:e_commerce_smk/app/routes/app_pages.dart';
 
 class LoginController extends GetxController {
@@ -62,7 +63,18 @@ class LoginController extends GetxController {
     await Future.delayed(const Duration(seconds: 1));
     isLoading.value = false;
 
-    Get.offAllNamed(Routes.HOME);
+    String? returnRoute;
+    if (Get.isRegistered<AuthService>()) {
+      await AuthService.to.login(emailController.text.trim());
+      returnRoute = AuthService.to.redirectRoute;
+      AuthService.to.redirectRoute = null;
+    }
+
+    if (returnRoute != null && returnRoute.isNotEmpty) {
+      Get.offNamed(returnRoute);
+    } else {
+      Get.offAllNamed(Routes.HOME);
+    }
     Get.snackbar(
       'Berhasil Masuk',
       'Selamat datang di KicksStore!',

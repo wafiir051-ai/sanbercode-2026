@@ -6,6 +6,7 @@ import 'package:e_commerce_smk/app/core/theme/app_colors.dart';
 import 'package:e_commerce_smk/app/data/models/cart_item_model.dart';
 import 'package:e_commerce_smk/app/utils/currency.dart';
 import 'package:e_commerce_smk/app/modules/cart/controllers/cart_controller.dart';
+import 'package:e_commerce_smk/app/routes/app_pages.dart';
 
 class CartView extends GetView<CartController> {
   const CartView({super.key});
@@ -206,11 +207,11 @@ class _SummaryCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: controller.checkout,
+              onPressed: () => Get.toNamed(Routes.CHECKOUT),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(48),
               ),
-              child: const Text('Checkout'),
+              child: const Text('Lanjut ke Pengiriman (Checkout)'),
             ),
           ],
         ),

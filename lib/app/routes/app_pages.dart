@@ -1,13 +1,17 @@
 import 'package:get/get.dart';
 
+import 'package:e_commerce_smk/app/core/middleware/auth_middleware.dart';
 import 'package:e_commerce_smk/app/modules/cart/bindings/cart_binding.dart';
 import 'package:e_commerce_smk/app/modules/cart/views/cart_view.dart';
+import 'package:e_commerce_smk/app/modules/checkout/bindings/checkout_binding.dart';
+import 'package:e_commerce_smk/app/modules/checkout/views/checkout_view.dart';
 import 'package:e_commerce_smk/app/modules/detail/bindings/detail_binding.dart';
 import 'package:e_commerce_smk/app/modules/detail/views/detail_view.dart';
 import 'package:e_commerce_smk/app/modules/home/bindings/home_binding.dart';
 import 'package:e_commerce_smk/app/modules/home/views/home_view.dart';
 import 'package:e_commerce_smk/app/modules/login/bindings/login_binding.dart';
 import 'package:e_commerce_smk/app/modules/login/views/login_view.dart';
+import 'package:e_commerce_smk/app/modules/orders/bindings/orders_binding.dart';
 import 'package:e_commerce_smk/app/modules/orders/views/orders_view.dart';
 import 'package:e_commerce_smk/app/modules/register/bindings/register_binding.dart';
 import 'package:e_commerce_smk/app/modules/register/views/register_view.dart';
@@ -20,7 +24,7 @@ import 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.LOGIN;
+  static const INITIAL = Routes.HOME;
 
   static final routes = [
     GetPage(
@@ -53,6 +57,16 @@ class AppPages {
       page: () => const WishlistView(),
       binding: WishlistBinding(),
     ),
-    GetPage(name: Routes.ORDERS, page: () => const OrdersView()),
+    GetPage(
+      name: Routes.ORDERS,
+      page: () => const OrdersView(),
+      binding: OrdersBinding(),
+    ),
+    GetPage(
+      name: Routes.CHECKOUT,
+      page: () => const CheckoutView(),
+      binding: CheckoutBinding(),
+      middlewares: [AuthMiddleware()],
+    ),
   ];
 }

@@ -1,6 +1,6 @@
 # KicksStore (e_commerce_smk)
 
-Tugas Sesi 07: Offline CRUD dengan Hive CE, TypeAdapter Generator, Caching Katalog Produk, dan Fitur Wishlist Favorit
+Tugas Sesi 08: Persistensi Keranjang Belanja Hive CE, Validasi Form Checkout, dan Proteksi Rute dengan GetX Middleware
 Bootcamp Flutter SMK (Sanbercode)
 
 - Nama: Waffir Hasan Alkamiil

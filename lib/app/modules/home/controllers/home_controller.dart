@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:e_commerce_smk/app/core/network/result.dart';
+import 'package:e_commerce_smk/app/core/services/auth_service.dart';
 import 'package:e_commerce_smk/app/core/theme/app_colors.dart';
 import 'package:e_commerce_smk/app/data/models/product_model.dart';
 import 'package:e_commerce_smk/app/data/repository/product_repository.dart';
@@ -170,6 +171,25 @@ class HomeController extends GetxController {
     } else {
       favoriteIds.remove(productId);
     }
+  }
+
+  void openAccount() {
+    if (!Get.isRegistered<AuthService>() || !AuthService.to.isLoggedIn.value) {
+      Get.toNamed(Routes.LOGIN);
+      return;
+    }
+    Get.defaultDialog(
+      title: 'Akun Saya',
+      middleText: 'Masuk sebagai ${AuthService.to.currentUserEmail.value}',
+      textCancel: 'Tutup',
+      textConfirm: 'Keluar',
+      confirmTextColor: Colors.white,
+      buttonColor: AppColors.error,
+      onConfirm: () async {
+        await AuthService.to.logout();
+        Get.back();
+      },
+    );
   }
 
   bool isFavorite(String productId) => favoriteIds.contains(productId);
