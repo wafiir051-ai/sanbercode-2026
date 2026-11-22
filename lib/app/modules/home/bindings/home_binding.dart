@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import 'package:e_commerce_smk/app/core/network/dio_client.dart';
+import 'package:e_commerce_smk/app/data/local/product_local_datasource.dart';
 import 'package:e_commerce_smk/app/data/remote/product_remote_datasource.dart';
 import 'package:e_commerce_smk/app/data/repository/product_repository.dart';
 import 'package:e_commerce_smk/app/modules/cart/controllers/cart_controller.dart';
@@ -14,8 +15,15 @@ class HomeBinding extends Bindings {
       () => ProductRemoteDataSourceImpl(Get.find<DioClient>()),
       fenix: true,
     );
+    Get.lazyPut<ProductLocalDataSource>(
+      () => ProductLocalDataSourceImpl(),
+      fenix: true,
+    );
     Get.lazyPut<ProductRepository>(
-      () => ProductRepositoryImpl(Get.find<ProductRemoteDataSource>()),
+      () => ProductRepositoryImpl(
+        Get.find<ProductRemoteDataSource>(),
+        Get.find<ProductLocalDataSource>(),
+      ),
       fenix: true,
     );
     Get.lazyPut<CartController>(() => CartController(), fenix: true);

@@ -1,6 +1,6 @@
 # KicksStore (e_commerce_smk)
 
-Tugas Sesi 06: Local Storage I, Persistensi Tema SharedPreferences, Inisialisasi Hive CE, dan Shimmer Skeleton Loading
+Tugas Sesi 07: Offline CRUD dengan Hive CE, TypeAdapter Generator, Caching Katalog Produk, dan Fitur Wishlist Favorit
 Bootcamp Flutter SMK (Sanbercode)
 
 - Nama: Waffir Hasan Alkamiil

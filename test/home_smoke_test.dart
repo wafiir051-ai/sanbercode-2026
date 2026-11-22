@@ -7,7 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 
-class _OfflineRepo implements ProductRepository {
+class _OfflineRepo extends Fake implements ProductRepository {
+  @override
+  bool get lastFetchFromCache => false;
+
+  @override
+  List<ProductModel> getWishlist() => [];
+
   @override
   Future<Result<List<ProductModel>, String>> fetchProducts() async =>
       const Failure('Tidak ada koneksi');

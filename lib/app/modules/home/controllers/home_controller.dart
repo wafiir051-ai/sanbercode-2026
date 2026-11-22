@@ -95,6 +95,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    favoriteIds.addAll(_productRepository.getWishlist().map((e) => e.id));
     fetchProducts();
   }
 
@@ -108,16 +109,22 @@ class HomeController extends GetxController {
         if (remote.isNotEmpty) {
           products.assignAll(remote);
           selectedCategory.value = 'Semua';
+          final fromCache = _productRepository.lastFetchFromCache;
           Get.snackbar(
-            'Katalog Berhasil Diperbarui',
-            'Berhasil mengunduh ${remote.length} sepatu terbaru dari server!',
+            fromCache ? 'Mode Offline' : 'Katalog Berhasil Diperbarui',
+            fromCache
+                ? 'Tidak ada koneksi. Menampilkan ${remote.length} sepatu dari penyimpanan lokal.'
+                : 'Berhasil mengunduh ${remote.length} sepatu terbaru dari server!',
             snackPosition: SnackPosition.BOTTOM,
             duration: const Duration(seconds: 2),
-            backgroundColor: AppColors.success,
+            backgroundColor: fromCache ? AppColors.accent : AppColors.success,
             colorText: Colors.white,
             margin: const EdgeInsets.all(16),
             borderRadius: 12,
-            icon: const Icon(Icons.cloud_done_rounded, color: Colors.white),
+            icon: Icon(
+              fromCache ? Icons.cloud_off_rounded : Icons.cloud_done_rounded,
+              color: Colors.white,
+            ),
           );
         }
       case Failure(error: final error):
@@ -142,22 +149,26 @@ class HomeController extends GetxController {
 
   void addToCart(ProductModel product) => cartController.addItem(product);
 
-  void toggleFavorite(String productId) {
-    if (favoriteIds.contains(productId)) {
-      favoriteIds.remove(productId);
-    } else {
+  Future<void> toggleFavorite(String productId) async {
+    final product = products.firstWhereOrNull((p) => p.id == productId);
+    if (product == null) return;
+
+    final isNowFav = await _productRepository.toggleWishlist(product);
+    if (isNowFav) {
       favoriteIds.add(productId);
       Get.snackbar(
         'Disimpan ke Wishlist',
         'Sepatu berhasil ditambahkan ke daftar favorit!',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFF4F46E5).withValues(alpha: 0.9),
+        backgroundColor: AppColors.primary.withValues(alpha: 0.9),
         colorText: Colors.white,
         margin: const EdgeInsets.all(16),
         borderRadius: 12,
         duration: const Duration(seconds: 2),
         icon: const Icon(Icons.favorite, color: Colors.white),
       );
+    } else {
+      favoriteIds.remove(productId);
     }
   }
 
