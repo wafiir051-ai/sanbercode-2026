@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:e_commerce_smk/app/core/services/auth_service.dart';
 import 'package:e_commerce_smk/app/core/theme/app_colors.dart';
 import 'package:e_commerce_smk/app/modules/home/controllers/home_controller.dart';
 import 'package:e_commerce_smk/app/data/local/storage_service.dart';
@@ -11,6 +12,20 @@ import 'package:e_commerce_smk/app/routes/app_pages.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
+
+  void _openAccount(BuildContext context) {
+    if (!AuthService.to.isLoggedIn.value) {
+      Get.toNamed(Routes.LOGIN);
+      return;
+    }
+    Get.bottomSheet(
+      const _AccountSheet(),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,15 +147,20 @@ class HomeView extends GetView<HomeController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Halo, Sneakers Enthusiast! 👋',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: isDark
-                                ? AppColors.darkTextSecondary
-                                : AppColors.lightTextSecondary,
-                          ),
-                        ),
+                        Obx(() {
+                          final auth = AuthService.to;
+                          return Text(
+                            auth.isLoggedIn.value
+                                ? 'Halo, ${auth.displayName}! 👋'
+                                : 'Halo, Sneakers Enthusiast! 👋',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: isDark
+                                  ? AppColors.darkTextSecondary
+                                  : AppColors.lightTextSecondary,
+                            ),
+                          );
+                        }),
                         const SizedBox(height: 2),
                         Text(
                           'Temukan Sepatu Impianmu',
@@ -156,7 +176,7 @@ class HomeView extends GetView<HomeController> {
                     ),
                   ),
                   InkWell(
-                    onTap: controller.openAccount,
+                    onTap: () => _openAccount(context),
                     borderRadius: BorderRadius.circular(24),
                     child: CircleAvatar(
                       radius: 22,
@@ -442,8 +462,126 @@ class HomeView extends GetView<HomeController> {
         onTap: (index) {
           if (index == 1) Get.toNamed(Routes.WISHLIST);
           if (index == 2) Get.toNamed(Routes.ORDERS);
-          if (index == 3) controller.openAccount();
+          if (index == 3) _openAccount(context);
         },
+      ),
+    );
+  }
+}
+
+class _AccountSheet extends StatelessWidget {
+  const _AccountSheet();
+
+  void _confirmLogout() {
+    Get.defaultDialog(
+      title: 'Keluar dari Akun?',
+      middleText: 'Sesi login Anda akan diakhiri.',
+      textCancel: 'Batal',
+      textConfirm: 'Ya, Keluar',
+      confirmTextColor: Colors.white,
+      buttonColor: AppColors.error,
+      onConfirm: () async {
+        await AuthService.to.logout();
+        Get.back();
+        Get.back();
+        Get.snackbar(
+          'Berhasil Keluar',
+          'Anda kini berstatus tamu.',
+          snackPosition: SnackPosition.BOTTOM,
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = AuthService.to;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 32,
+              backgroundColor: AppColors.primary.withAlpha(40),
+              child: const Icon(
+                Icons.person_rounded,
+                size: 36,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Obx(
+              () => Text(
+                auth.currentUserEmail.value,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.success.withAlpha(30),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.verified_user_rounded,
+                    size: 14,
+                    color: AppColors.success,
+                  ),
+                  SizedBox(width: 6),
+                  Text(
+                    'Terautentikasi Firebase',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.success,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            ListTile(
+              leading: const Icon(Icons.receipt_long_outlined),
+              title: const Text('Riwayat Pesanan'),
+              onTap: () {
+                Get.back();
+                Get.toNamed(Routes.ORDERS);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.favorite_border_rounded),
+              title: const Text('Wishlist Favorit'),
+              onTap: () {
+                Get.back();
+                Get.toNamed(Routes.WISHLIST);
+              },
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: _confirmLogout,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                ),
+                icon: const Icon(Icons.logout_rounded),
+                label: const Text('Keluar dari Akun'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

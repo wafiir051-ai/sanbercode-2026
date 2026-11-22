@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "337470052416",
+    "project_id": "kicksstore-smk-waffir",
+    "storage_bucket": "kicksstore-smk-waffir.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:337470052416:android:cdd9b4eacab7d50fd667a5",
+        "android_client_info": {
+          "package_name": "com.example.e_commerce_smk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2LePUL-1CI3S-JDXqd7so-loePmmFQoc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

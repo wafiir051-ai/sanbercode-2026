@@ -1,4 +1,5 @@
 import 'package:e_commerce_smk/app/core/network/result.dart';
+import 'package:e_commerce_smk/app/core/services/auth_service.dart';
 import 'package:e_commerce_smk/app/core/theme/app_theme.dart';
 import 'package:e_commerce_smk/app/data/models/product_model.dart';
 import 'package:e_commerce_smk/app/data/repository/product_repository.dart';
@@ -33,6 +34,7 @@ void main() {
     addTearDown(() => FlutterError.onError = onError);
 
     Get.put<ProductRepository>(_OfflineRepo());
+    Get.put<AuthService>(AuthService());
     addTearDown(Get.reset);
 
     await tester.pumpWidget(

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:e_commerce_smk/app/core/services/auth_service.dart';
+import 'package:e_commerce_smk/app/core/theme/app_colors.dart';
+import 'package:e_commerce_smk/app/modules/login/controllers/login_controller.dart';
+import 'package:e_commerce_smk/app/routes/app_pages.dart';
+
 class RegisterController extends GetxController {
   final formKey = GlobalKey<FormState>();
   late final TextEditingController nameController;
@@ -85,17 +90,54 @@ class RegisterController extends GetxController {
   }
 
   Future<void> register() async {
-    if (!formKey.currentState!.validate()) return;
+    if (formKey.currentState != null && !formKey.currentState!.validate()) {
+      return;
+    }
 
     isLoading.value = true;
-    await Future.delayed(const Duration(seconds: 1));
-    isLoading.value = false;
+    try {
+      final registeredEmail = emailController.text.trim();
+      await AuthService.to.register(registeredEmail, passwordController.text);
 
-    Get.back();
-    Get.snackbar(
-      'Pendaftaran Berhasil',
-      'Akun berhasil dibuat, silakan masuk.',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+      final returnRoute = AuthService.to.redirectRoute;
+      AuthService.to.redirectRoute = null;
+
+      if (returnRoute != null && returnRoute.isNotEmpty) {
+        Get.until(
+          (route) =>
+              route.isFirst ||
+              (route.settings.name != Routes.LOGIN &&
+                  route.settings.name != Routes.REGISTER),
+        );
+        Get.toNamed(returnRoute);
+      } else {
+        await AuthService.to.logout();
+        if (Get.isRegistered<LoginController>()) {
+          Get.find<LoginController>().emailController.text = registeredEmail;
+        }
+        Get.back();
+      }
+      Get.snackbar(
+        'Pendaftaran Berhasil 🎉',
+        'Akun berhasil dibuat di KicksStore.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.success,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Gagal Mendaftar',
+        AuthService.mapFirebaseAuthError(e),
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: AppColors.error,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 }

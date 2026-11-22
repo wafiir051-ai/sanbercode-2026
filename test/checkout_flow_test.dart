@@ -8,7 +8,6 @@ import 'package:e_commerce_smk/app/modules/checkout/controllers/checkout_control
 import 'package:e_commerce_smk/app/routes/app_pages.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 const _shoe = ProductModel(
   id: 'shoe-01',
@@ -52,10 +51,7 @@ void main() {
   testWidgets(
     'tamu dicegat ke login lalu dikembalikan ke checkout setelah masuk',
     (tester) async {
-      SharedPreferences.setMockInitialValues({});
-      final auth = await AuthService().init(
-        prefs: await SharedPreferences.getInstance(),
-      );
+      final auth = await AuthService().init();
       Get.put<AuthService>(auth);
 
       await tester.pumpWidget(
@@ -74,7 +70,7 @@ void main() {
       expect(auth.redirectRoute, Routes.CHECKOUT);
 
       expect(AuthMiddleware().redirect(Routes.CHECKOUT), isNotNull);
-      await auth.login('nama@sekolah.sch.id');
+      auth.isLoggedIn.value = true;
       expect(AuthMiddleware().redirect(Routes.CHECKOUT), isNull);
       await tester.pump(const Duration(seconds: 5));
     },

@@ -1,0 +1,35 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "kicksstore-smk-waffir",
+          "appId": "1:337470052416:android:cdd9b4eacab7d50fd667a5",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "kicksstore-smk-waffir",
+          "appId": "1:337470052416:ios:a87d9e6a9ac4eec9d667a5",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "kicksstore-smk-waffir",
+          "configurations": {
+            "android": "1:337470052416:android:cdd9b4eacab7d50fd667a5",
+            "ios": "1:337470052416:ios:a87d9e6a9ac4eec9d667a5"
+          }
+        }
+      }
+    }
+  },
+  "auth": {
+    "providers": {
+      "emailPassword": true
+    }
+  }
+}

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:e_commerce_smk/app/core/services/auth_service.dart';
+import 'package:e_commerce_smk/app/core/theme/app_colors.dart';
 import 'package:e_commerce_smk/app/routes/app_pages.dart';
 
 class LoginController extends GetxController {
@@ -17,6 +18,12 @@ class LoginController extends GetxController {
     super.onInit();
     emailController = TextEditingController();
     passwordController = TextEditingController();
+
+    if (Get.isRegistered<AuthService>() && AuthService.to.isLoggedIn.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.offAllNamed(Routes.HOME);
+      });
+    }
   }
 
   @override
@@ -57,29 +64,47 @@ class LoginController extends GetxController {
   }
 
   Future<void> login() async {
-    if (!formKey.currentState!.validate()) return;
+    if (formKey.currentState != null && !formKey.currentState!.validate()) {
+      return;
+    }
 
     isLoading.value = true;
-    await Future.delayed(const Duration(seconds: 1));
-    isLoading.value = false;
+    try {
+      await AuthService.to.login(
+        emailController.text.trim(),
+        passwordController.text,
+      );
 
-    String? returnRoute;
-    if (Get.isRegistered<AuthService>()) {
-      await AuthService.to.login(emailController.text.trim());
-      returnRoute = AuthService.to.redirectRoute;
+      final returnRoute = AuthService.to.redirectRoute;
       AuthService.to.redirectRoute = null;
-    }
 
-    if (returnRoute != null && returnRoute.isNotEmpty) {
-      Get.offNamed(returnRoute);
-    } else {
-      Get.offAllNamed(Routes.HOME);
+      if (returnRoute != null && returnRoute.isNotEmpty) {
+        Get.offNamed(returnRoute);
+      } else {
+        Get.offAllNamed(Routes.HOME);
+      }
+      Get.snackbar(
+        'Berhasil Masuk 🎉',
+        'Selamat datang di KicksStore!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.success,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Gagal Masuk',
+        AuthService.mapFirebaseAuthError(e),
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: AppColors.error,
+        colorText: Colors.white,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+    } finally {
+      isLoading.value = false;
     }
-    Get.snackbar(
-      'Berhasil Masuk',
-      'Selamat datang di KicksStore!',
-      snackPosition: SnackPosition.BOTTOM,
-    );
   }
 
   void goToRegister() => Get.toNamed(Routes.REGISTER);
